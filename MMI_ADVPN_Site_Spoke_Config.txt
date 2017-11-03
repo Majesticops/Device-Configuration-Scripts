@@ -1,0 +1,143 @@
+------------------------------
+Spoke 1 to HUB 1 ( JHB Teraco )
+-------------------------------
+-------------
+IPSEC Config:
+-------------
+config vpn ipsec phase1-interface
+ edit "ADVPN-Majestic1"
+  set interface "wan"
+  set proposal aes128-sha1
+  set add-route disable
+  set dhgrp 2
+  set auto-discovery-receiver enable
+  set remote-gw 41.66.150.1
+  set psksecret &&Getfrom-me!!
+  set dpd-retrycount 3
+  set dpd-retryinterval 2
+  set dpd on-idle
+ next
+
+end
+
+config vpn ipsec phase2-interface
+    edit "ADVPN-P2-JHB"
+        set phase1name "ADVPN-Majestic1"
+        set proposal aes128-sha1
+	set auto-negotiate enable
+    next
+end
+
+config system interface
+    edit "ADVPN-Majestic1"
+        set vdom "root"
+        set ip 10.195.195.2 255.255.255.255
+        set type tunnel
+        set remote-ip 10.195.195.1
+        set interface "wan"
+    next
+end
+
+
+-------------
+Policy-HUB 1
+-------------
+
+config firewall policy
+    edit 9
+        set name "OUT ADVPN JHB"
+        set srcintf "internal"
+        set dstintf "ADVPN-Majestic1"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set status enable
+    next
+    edit 10
+        set name "IN ADVPN JHB"
+        set srcintf "ADVPN-Majestic1"
+        set dstintf "internal"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set status enable
+    next
+end
+
+
+------------------------------
+Spoke 1 to HUB 2 ( CPT Teraco )
+-------------------------------
+
+-------------
+IPSEC Config:
+-------------
+config vpn ipsec phase1-interface
+ edit "ADVPN-Majestic2"
+  set interface "wan"
+  set proposal aes128-sha1
+  set add-route disable
+  set dhgrp 2
+  set auto-discovery-receiver enable
+  set remote-gw 41.66.150.3
+  set psksecret &&Getfrom-me!!
+  set dpd-retrycount 3
+  set dpd-retryinterval 2
+  set dpd on-idle
+
+ next
+
+end
+
+config vpn ipsec phase2-interface
+    edit "ADVPN-P2-CPT"
+        set phase1name "ADVPN-Majestic2"
+        set proposal aes128-sha1
+	set auto-negotiate enable
+    next
+end
+
+config system interface
+    edit "ADVPN-Majestic2"
+        set vdom "root"
+        set ip 10.196.196.2 255.255.255.255
+        set type tunnel
+        set remote-ip 10.196.196.1
+        set interface "wan"
+    next
+end
+
+
+----------------
+Policy-HUB 2(CPT)
+----------------
+
+
+config firewall policy
+    edit 11
+        set name "OUT ADVPN CPT"
+        set srcintf "internal"
+        set dstintf "ADVPN-Majestic2"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set status enable
+    next
+    edit 12
+        set name "IN ADVPN CPT"
+        set srcintf "ADVPN-Majestic2"
+        set dstintf "internal"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set status enable
+    next
+end
